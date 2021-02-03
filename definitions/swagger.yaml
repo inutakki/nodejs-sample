@@ -1,0 +1,4372 @@
+---
+swagger: "2.0"
+info:
+  title: RX BFF API
+  description: >-
+    Rx BFF is a Node JS based application which is developed using Loopback framework.
+    All the logic supporting the UI are primarily developed in Rx BFF(BackEnd For FrontEnd).
+    BFF is supporting the presentation tier will be responsible for session caching, data caching, data aggregation and
+    filtering services are primarily coded in Node JS. BFF will support all the business functionality like interacting
+    with adapters like User Profile Adapter, Medication Order Service, Address Adapter Service, User Interaction
+    Log service and the backend SOR services & systems.
+  version: 1.0.0
+host: dit-rx-bff-kpweb-1.rx.ext-svc-bmxnp.appl.kp.org
+schemes:
+  - https
+basePath: /
+produces:
+  - application/json
+paths:
+  "/address":
+    get:
+      tags:
+        - Address
+      summary: Find all instances of the model matched by filter from the data source. Accepted filter types are 'all', 'shipping' and 'mailing'.
+      description: >-
+        This operation is used to get all the addresses of member like MAILING and SHIPPING addresses based on the
+        member GUID. This will call the 'getAddress' operation of Address Adapter Service.
+      operationId: address.find
+      parameters:
+        - name: filter
+          in: query
+          description: "?filter[type]=shipping/mailing/all"
+          required: true
+          type: string
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - name: X-idType
+          in: header
+          description: id Type
+          required: true
+          type: string
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+      responses:
+        "200":
+          description: Request was successful
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/getAddress"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+      deprecated: false
+    post:
+      tags:
+        - Address
+      summary: "Handles request to Add an address to guid. \nOnly shipping address is allowed to be added. \nCannot add after four shipping addresses are available for a guid. \n\"region\" and \"S\" cookies are required."
+      description: >-
+        This operation is used to CREATE the address based on the provided address for a member.
+          This will call the 'addAddress' operation of Address Adapter Service.
+      operationId: address.addAddress
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - name: X-idType
+          in: header
+          description: id Type
+          required: true
+          type: string
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              addressInfos:
+                type: object
+                properties:
+                  addressType:
+                    type: string
+                    example: "SHIPPING"
+                  sourceSystem:
+                    type: string
+                    example: "KP_EBIZ"
+                  label:
+                    type: string
+                    example: "ship5640"
+                  street1:
+                    type: string
+                    example: "5820 OWENS DR"
+                  street2:
+                    type: string
+                    example: "BUILDING E"
+                  city:
+                    type: string
+                    example: "PLEASANTON"
+                  state:
+                    type: string
+                    example: "CA"
+                  country:
+                    type: string
+                    example: "USA"
+                  postalCode:
+                    type: string
+                    example: "94588"
+                  careOfFirstName:
+                    type: string
+                    example: "TEST SUBSCRIBER"
+                    pattern: "[A-Za-z\\-\\.,\\' ]"
+                  careOfMiddleName:
+                    type: string
+                    example: "M"
+                    pattern: "^$|[A-Za-z]"
+                  careOfLastName:
+                    type: string
+                    example: "HCOTABADHCBGBLN"
+                    pattern: "[A-Za-z\\-\\.,\\' ]"
+                  preferredIn:
+                    type: boolean
+                    example: true
+      responses:
+        "200":
+          description: Request was successful
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/AddressResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+      deprecated: false
+    put:
+      tags:
+        - Address
+      summary: "Handles request to Edit an address to guid. \nOnly shipping address is allowed to be edited. \n\"region\" and \"S\" cookies are required"
+      description: >-
+        This operation is used to UPDATE the address based on the provided address, addressType, addressLabel and sourceSystem for a member.
+        This will call the 'updateAddress' operation of Address Adapter Service.
+      operationId: address.editAddress
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - name: X-idType
+          in: header
+          description: id Type
+          required: true
+          type: string
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              addressInfos:
+                type: object
+                properties:
+                  addressType:
+                    type: string
+                    example: "SHIPPING"
+                  sourceSystem:
+                    type: string
+                    example: "KP_EBIZ"
+                  label:
+                    type: string
+                    example: "ship5640"
+                  street1:
+                    type: string
+                    example: "5820 OWENS DR"
+                  street2:
+                    type: string
+                    example: "BUILDING E"
+                  city:
+                    type: string
+                    example: "PLEASANTON"
+                  state:
+                    type: string
+                    example: "CA"
+                  country:
+                    type: string
+                    example: "USA"
+                  postalCode:
+                    type: string
+                    example: "94588"
+                  careOfFirstName:
+                    type: string
+                    example: "TEST SUBSCRIBER"
+                    pattern: "[A-Za-z\\-\\.,\\' ]"
+                  careOfMiddleName:
+                    type: string
+                    example: "M"
+                    pattern: "^$|[A-Za-z]"
+                  careOfLastName:
+                    type: string
+                    example: "HCOTABADHCBGBLN"
+                    pattern: "[A-Za-z\\-\\.,\\' ]"
+                  preferredIn:
+                    type: boolean
+                    example: true
+      responses:
+        "200":
+          description: Request was successful
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/AddressResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+      deprecated: false
+    delete:
+      tags:
+        - Address
+      summary: "Handles request to Delete an address in guid. \nOnly \"x-addresstype :shipping\" is allowed to be deleted. \n\"S\" cookie is required"
+      description: >-
+        This operation is used to DELETE the address based on the provided address, addressType, addressLabel and sourceSystem for a member.
+        This will call the 'deleteAddress' operation of Address Adapter Service.
+      operationId: address.deleteAddress
+      parameters:
+        - name: x-label
+          in: header
+          required: true
+          type: string
+        - name: x-updatepartial
+          in: header
+          required: true
+          type: boolean
+        - name: x-sourcesystem
+          in: header
+          required: true
+          type: string
+        - name: x-addresstype
+          in: header
+          required: true
+          type: string
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - name: X-idType
+          in: header
+          description: id Type
+          required: true
+          type: string
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+      responses:
+        "200":
+          description: Request was successful
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/AddressResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+      deprecated: false
+  "/prescriptions":
+    get:
+      tags:
+        - Prescription
+      summary: The Prescriptions api returns list of prescriptions of the member or its proxy.
+      description: >-
+        This operation is used to get all Prescriptions details based on the member GUID. This will call the 'prescriptions' operation of Medication Order Service.
+      parameters:
+        - name: filter
+          in: query
+          description: >-
+            Filter is nested object with params type,pageNumber and pageSize
+            expected formate is
+            'filter[Avail|unAvail]={"type":"Avail|unAvail","pageNumber":"<number>","pageSize":"ALL|<number>"}'
+          required: true
+          type: string
+          format: json
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+      responses:
+        "200":
+          description: An array of prescriptions
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/rxData"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/prescription":
+    get:
+      tags:
+        - Search Prescription
+      summary: The Prescriptions api returns list of prescriptions of the member or its proxy
+      description: >-
+        This operation is used to get the prescription details from ePIMS based on the provided member MRN and RX number.
+        This will call the 'prescriptions' operation of Medication Order Service with filter rxNumber.
+      parameters:
+        - name: rxNumber
+          in: query
+          description: >-
+            Prescription Number, expected format is 'filter[rxNumber]=<number>'
+          required: true
+          type: string
+        - name: identifier
+          in: query
+          description: >-
+            identifier is nested object with params id and type
+            expected formate is
+            'filter[identifier]={"id":"<string>","type":"MRN"}'
+          required: false
+          type: string
+          format: json
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+      responses:
+        "200":
+          description: An array of prescriptions
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/searchRxData"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/cart":
+    get:
+      tags:
+        - Cart
+      summary: The Cart Api returns list of cart items of the member or its proxy
+      description: >-
+        This operation is used to get all the details of member Info like User Profile info, Proxy Info, Entitlement Info and Prescriptions based on the member GUID. This will call the 'user', 'proxyinformation', 'entitlements' operations of User Profile Adapter. And 'prescriptions' operation of Medication Order Service.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+      responses:
+        "200":
+          description: An object of cart items are returned
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/cartData"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/cart/prescription":
+    post:
+      tags:
+        - Cart
+      summary: The Cart prescription api adds  prescription of member or proxy to cart
+      description: >-
+        This operation is used to ADD the prescriptions to Cart in session. This will initiate redis session and save the cart information on redis cache.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: form
+          in: body
+          description: form object
+          required: true
+          schema:
+            "$ref": "#/definitions/addCartForm"
+      responses:
+        "200":
+          description: An array of prescriptions
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/cartResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+    delete:
+      tags:
+        - Cart
+      summary: The Cart endpoint delete  prescription of member or proxy from cart.
+      description: >-
+        This operation is used to DELETE the prescriptions from Cart in session.
+      parameters:
+        - name: X-rxNumber
+          in: header
+          description: prescription number
+          required: true
+          type: string
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: form
+          in: body
+          description: form object
+          required: true
+          schema:
+            "$ref": "#/definitions/deleteCartForm"
+      responses:
+        "200":
+          description: An array of prescriptions
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/cartResponse"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/cart/costestimate":
+    post:
+      tags:
+        - Cart
+      summary: The Cart endpoint returns list of cart items with estimates of the member or its proxy.
+      description: >-
+        This operation is used to get Cost Estimates for given Rx number and member MRN.
+        This will call the '/estimate?method=init', and '/estimate?method=fetch' operation of Medication Order Service.
+      parameters:
+        - name: deliveryMethod
+          in: query
+          description: >-
+            Delivery method for Mail Order --> ?deliveryMethod=mail
+
+            Delivery method for Pickup Order --> ?deliveryMethod=pickup
+
+            Delivery method for Express Pickup Order --> ?deliveryMethod=expresspickup
+          required: true
+          type: string
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: form
+          in: body
+          description: Cart Items object
+          required: true
+          schema:
+            "$ref": "#/definitions/cartItemsObjectForm"
+      responses:
+        "200":
+          description: An array of cart items with estimates
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/estimateCartData"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/shippingaddress":
+    post:
+      tags:
+        - Order
+      summary: Save shipping address to cache.
+      description: >-
+        This operation is used to ADD the shipping address to the session for Mail orders.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: form
+          in: body
+          description: form object
+          required: true
+          schema:
+            "$ref": "#/definitions/address"
+      responses:
+        "200":
+          description: Request was successful
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/shippingAddressResult"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/pickuplocation":
+    post:
+      tags:
+        - Order
+      summary: Save pickup pharmacy Location to cache
+      description: >-
+        This operation is used to ADD the pharmacy pickup location to the session for Pickup order.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: form
+          in: body
+          description: form object
+          required: true
+          schema:
+            "$ref": "#/definitions/pickupLocation"
+      responses:
+        "200":
+          description: Request was successful
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/pickupLocationResult"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/contactandnotifications":
+    post:
+      tags:
+        - Order
+      summary: Save contact Details to cache.
+      description: >-
+        This operation is used to ADD the contact and notifications information to the session for Mail or Pickup order.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: form
+          in: body
+          description: form object
+          required: true
+          schema:
+            "$ref": "#/definitions/contactAndNotifications"
+      responses:
+        "200":
+          description: place order response
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/contactAndNotifications"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/details":
+    post:
+      tags:
+        - Order
+      summary: Fetch member details.
+      description: >-
+        This operation is used to get all the details of member Info like deliveryMethod, Contact Phones, Credit Cards, Email, Shipping Address and Notification Preferences based on the member GUID.
+        This will call the 'personphone', 'additionalinfo', 'userfeaturedata of User Profile Adapter. And 'memberdetails' operation of Medication Order Service.
+      parameters:
+        - name: deliveryMethod
+          in: query
+          description: >-
+            Delivery method for Mail Order --> ?deliveryMethod=mail
+
+            Delivery method for Pickup Order --> ?deliveryMethod=pickup
+
+            Delivery method for Express Pickup Order --> ?deliveryMethod=expresspickup
+          required: true
+          type: string
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: form
+          in: body
+          description: Cart Items object
+          required: true
+          schema:
+            "$ref": "#/definitions/cartItemsObjectForm"
+      responses:
+        "200":
+          description: Request was successful
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/userDetails"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/prescriptions/pickup":
+    post:
+      tags:
+        - Place Order
+      summary: Place Order for PICKUP (or) EXPRESSPICKUP
+      description: >-
+        This operation is used to Place Oders PICKUP (or) EXPRESSPICKUP or given Rx number and member MRN for pickup (or) expresspickup orders.
+        This will call the 'PlacePickupOrder' operation of Medication Order Service.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: form
+          in: body
+          description: PickUp Order Form object
+          required: true
+          schema:
+            "$ref": "#/definitions/pickUpOrderForm"
+      responses:
+        "200":
+          description: place order successful response
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/placeOrderResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/prescriptions/mail":
+    post:
+      tags:
+        - Place Order
+      summary: Place Order for Mail Order
+      description: >-
+        This operation is used to Place Orders Mail or given Rx numbers and member MRN for Mail orders.
+        This will call the 'PlaceMailOrder' operation of Medication Order Service.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: form
+          in: body
+          description: Mail Order Form object
+          required: true
+          schema:
+            "$ref": "#/definitions/mailOrderForm"
+      responses:
+        "200":
+          description: place order successful response
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/placeOrderResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/prescriptions/delivery":
+    post:
+      tags:
+        - Place Order
+      summary: Place Order for rapid delivery Order
+      description: >-
+        This operation is used to Place Orders delivery or given Rx numbers and member MRN for Mail orders.
+        This will call the 'PlaceDeliveryOrder' operation of Medication Order Service.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: form
+          in: body
+          description: Mail Order Form object
+          required: true
+          schema:
+            "$ref": "#/definitions/deliveryOrderForm"
+      responses:
+        "200":
+          description: place order successful response
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/placeOrderResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/creditcard":
+    get:
+      tags:
+        - Payment
+      summary: Get default credit card
+      description: >-
+        This operation is used to get all credit cards from member profile and ePIMS card.
+        This will call the 'PPS v2 profile', and 'getMemberDetails' operation of Medication Order Service.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-apiKey"
+        - "$ref": "#/parameters/X-appName"
+        - "$ref": "#/parameters/regionid"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+      responses:
+        "200":
+          description: Get default credit card
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/defaultCardResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+    post:
+      tags:
+        - Payment
+      summary: Post selected credit card
+      description: >-
+        This operation is used to ADD credit card to PPS profile for given member.
+        This will call the 'PPS v1 add card' operation of PPS service.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-apiKey"
+        - "$ref": "#/parameters/X-appName"
+        - "$ref": "#/parameters/regionid"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-WalletPaymentToken"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: form
+          in: body
+          description: form object
+          required: true
+          schema:
+            "$ref": "#/definitions/creditCard"
+      responses:
+        "200":
+          description: Post credit card response
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/cardResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+    put:
+      tags:
+        - Payment
+      summary: Update selected credit card
+      description: >-
+        This operation is used to UPDATE credit card details to PPS profile for given member and credit card.
+        This will call the 'PPS v1 add card' operation of PPS service.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-apiKey"
+        - "$ref": "#/parameters/X-appName"
+        - "$ref": "#/parameters/regionid"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-WalletPaymentToken"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: form
+          in: body
+          description: form object
+          required: true
+          schema:
+            type: object
+            properties:
+              expiryDate:
+                type: string
+                description: Expiry Date of the Credit Card
+                format: MM/YYYY
+                pattern: "[0-9][0-9]/20[0-9]{2}"
+                example: "12/2020"
+                minLength: 6
+                maxLength: 7
+              last4Digit:
+                type: string
+                description: Last 4 digits of the credit card
+                example: "1234"
+      responses:
+        "200":
+          description: Update credit card
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/cardResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+    delete:
+      tags:
+        - Payment
+      summary: Delete selected credit card
+      description: >-
+        This operation is used to DELETE credit card from PPS profile for given member and credit card.
+        This will call the DELETE operation of PPS service.
+      parameters:
+        - name: X-CARD-NUMBER
+          in: header
+          description: credit card number
+          required: true
+          type: string
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-apiKey"
+        - "$ref": "#/parameters/X-appName"
+        - "$ref": "#/parameters/regionid"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-WalletPaymentToken"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+      responses:
+        "200":
+          description: Delete credit card
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/cardResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/order/cart":
+    delete:
+      tags:
+        - Cancel Order
+      summary: Cancel Order details from cart
+      description: This operation is used to DELETE the order details like Shipping address, credit card info, contact info and notification preferences info from Cart in session.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+      responses:
+        "200":
+          description: cancel Order
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/cancelOrderResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/rxdeliveryeligibility":
+    post:
+      tags:
+        - Rx Delivery Eligibility
+      summary: cart delivery eligibility for same day delivery or next day delivery.
+      description: >-
+        This operation is used to get cart delivery eligibility for cart.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - "$ref": "#/parameters/X-Env"
+        - name: form
+          in: body
+          description: Cart Items object
+          required: true
+          schema:
+            "$ref": "#/definitions/cartItemsEligibility"
+      responses:
+        "200":
+          description: An array of cart items with estimates
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/estimateCartData"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "503":
+          description: Service Unavailable
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/ServiceUnavailableError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        "515":
+          description: Data Swap Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/DataSwapError"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/rxnotificationpreferences":
+    get:
+      tags:
+        - Rx Notfication Preferences
+      summary: Get Rx Notification Preferences
+      description: This operation is used to GET Communication Preferences and Contact Methods using EPP Adapter /preferences and /profile operations.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+      responses:
+        "200":
+          description: Get Rx Notification Preferences
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-global-transaction-id:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/getRxNotificationPreferencesResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+    put:
+      tags:
+        - Rx Notfication Preferences
+      summary: Set Rx Notification Preferences
+      description: This operation is used to PUT Communication Preferences using EPP Adapter /preferences operation. EPP Adapter will call EnterpriseProfilePreferencesService.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+      responses:
+        "200":
+          description: Set Rx Notification Preferences
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-global-transaction-id:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/setRxNotificationPreferencesResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+  "/refillReminderPreferences":
+    get:
+      tags:
+        - Rx Refill Reminder Preferences
+      summary: Get Refill Reminder Preferences
+      description: This operation is used to get refill Reminder Preferences from EPP and also if preference enabled, it will get refill reminder enrollment status from ePIMS.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+      responses:
+        "200":
+          description: Get Refill Reminder Preferences
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-global-transaction-id:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/getRefillReminderPreferencesResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+    post:
+      tags:
+        - Rx Refill Reminder Preferences
+      summary: Set Refill Reminder Preferences
+      description: This operation is used to POST refill reminder enrollment using Refill Reminder Service /setEnrollmentStatus operation.
+      parameters:
+        - name: X-GUID
+          in: header
+          description: Member GUID
+          required: true
+          type: string
+        - "$ref": "#/parameters/userAgent"
+        - "$ref": "#/parameters/referer"
+        - "$ref": "#/parameters/cookie"
+        - "$ref": "#/parameters/X-IBM-Client-Id"
+        - "$ref": "#/parameters/X-Global-Transaction-Id"
+        - "$ref": "#/parameters/X-correlationid"
+        - name: body
+          in: body
+          description: form object
+          required: true
+          schema:
+            "$ref": "#/definitions/setRefillReminderPreferencesBody"
+      responses:
+        "200":
+          description: Set Refill Reminder Preferences
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-global-transaction-id:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/setRefillReminderPreferencesResponse"
+        "500":
+          description: Internal Server Error
+          headers:
+            x-correlationid:
+              description: Used to track request flow
+              type: string
+            x-response-guid:
+              description: Used for verifying data swap
+              type: string
+            x-response-relid:
+              description: Used for verifying data swap
+              type: string
+          schema:
+            "$ref": "#/definitions/InternalServerError"
+        "412":
+          description: Precondition Failed
+          schema:
+            "$ref": "#/definitions/PreconditionFailed"
+        default:
+          description: Unexpected error
+          schema:
+            "$ref": "#/definitions/Error"
+parameters:
+  cookie:
+    name: Cookie
+    type: string
+    in: header
+    required: true
+    description: >-
+      The following set of cookies are required: 'ObssoCookie' - used for user
+      authentication using SSO, KPSessionId,WPP_PROXY_RELATIONSHIP_ID - relId and S - datacenter number
+  userAgent:
+    name: User-Agent
+    type: string
+    in: header
+    required: false
+    description: >-
+      User-Agent header as injected by all browser based clients as per W3C
+      specification
+  referer:
+    name: Referer
+    type: string
+    in: header
+    required: false
+    description: >-
+      Referer header as injected by all browser based clients as per W3C
+      specification
+  X-IBM-Client-Id:
+    name: X-IBM-Client-Id
+    in: header
+    description: Space specific Id to allow access to APIC spaces
+    required: true
+    type: string
+  X-appName:
+    name: X-appName
+    in: header
+    description: Name of the app calling bff service
+    required: true
+    type: string
+  X-apiKey:
+    name: X-apiKey
+    in: header
+    description: API Key value
+    required: true
+    type: string
+  regionid:
+    name: regionid
+    in: header
+    description: Region ID for Payment operation
+    required: true
+    type: string
+  X-componentname:
+    name: X-componentname
+    in: header
+    description: Component Name - logging
+    required: false
+    type: string
+  X-correlationid:
+    name: X-correlationid
+    in: header
+    description: Correlation Id to trace transations
+    required: true
+    type: string
+  X-Global-Transaction-Id:
+    name: X-Global-Transaction-Id
+    in: header
+    description: Global Transaction id to trace transactions
+    required: true
+    type: string
+  X-Env:
+    name: X-Env
+    in: header
+    description: Non-prod environment name to connect
+    required: false
+    type: string
+  X-WalletPaymentToken:
+    name: X-WalletPaymentToken
+    in: header
+    description: Wallet Payment Token
+    required: true
+    type: string
+securityDefinitions:
+  ApplicationMonitoring:
+    type: apiKey
+    in: header
+    name: X-ibm-client-id
+security:
+  - ApplicationMonitoring: []
+definitions:
+  Prescription:
+    type: object
+    properties:
+      prescriptionName:
+        type: string
+        description: Name of the drug / prescription.
+        example: "Lovastatin 10 mg tab sand"
+      prescriptionNumber:
+        type: string
+        description: Presciption to be usedfor ordering to pharmacy
+        example: "268510057691"
+      prescribedBy:
+        type: string
+        description: Full Name of the provider who prescribed the prescription
+        example: "NAPADOCTOR GENERAL MD"
+      firstFill:
+        type: boolean
+        description: >-
+          Returns true if prescriber has prescribed the rx for the first time to
+          member else false
+        example: true
+      prescribedOn:
+        type: string
+        description: Date when rx was prescribed to the member (mm/dd/yyyy)
+        example: "08/06/2018"
+        minLength: 3
+        maxLength: 10
+      lastRefillDate:
+        type: string
+        description: Date when rx was last refilled at the pharmacy for the the member
+        example: "07/19/2018"
+        minLength: 3
+        maxLength: 10
+      instructions:
+        type: string
+        description: Any instructions to to the member
+        example: "Take 1 tablet by mouth daily"
+      drugInfo:
+        "$ref": "#/definitions/DrugInfo"
+      pharmacyInfo:
+        "$ref": "#/definitions/PharmacyInfo"
+      statusCodes:
+        "$ref": "#/definitions/StatusCodes"
+      displayShippingInfo:
+        type: boolean
+        description: if rx has shipment details this value will be true
+        example: true
+      lastsoldDate:
+        type: string
+        description: Date when rx was last sold at the pharmacy for the the member
+        example: "08/06/2018"
+        minLength: 3
+        maxLength: 10
+      refillsRemaining:
+        type: string
+        description: Refills Remaining retuns value if available otherwise returns null.
+        example: "5"
+        minLength: 1
+        maxLength: 3
+      rxTrackingURL:
+        type: string
+        description: Shipment Tracking URL if available
+        example: "https://tools.usps.com/go/TrackConfirmAction?tLabels=1234567890"
+  DrugInfo:
+    type: object
+    properties:
+      code:
+        type: string
+        description: Drug code
+        example: "218736"
+      description:
+        type: string
+        description: Description of the drug
+        example: "First Data Bank Code"
+      type:
+        type: string
+        description: Type of the drug
+        example: "FDB"
+  PharmacyInfo:
+    type: object
+    properties:
+      quantity:
+        type: number
+        description: Quantity of the drugs
+        example: 1
+      coPayAmount:
+        type: string
+        description: any co-payment amount
+        example: "20.00"
+        minLength: 1
+        maxLength: 8
+      mailable:
+        type: boolean
+        description: if true then then rx is avaiable for shipping
+        example: true
+      nhinId:
+        type: string
+        description: nhinId of pharmacy
+        example: "900002267"
+      dispenseLocationCode:
+        type: string
+        description: dispenseLocationCode of the pharmacy where the rx was issued
+        example: "267"
+      displayRxReadyDate:
+        type: boolean
+        description: if true then rxReadyDate will be displayed or rxReadyDate will be  null
+        example: true
+      rxReadyDate:
+        type: string
+        description: dispenseLocationCode of the pharmacy where the rx was issued
+        example: null
+  StatusCodes:
+    type: object
+    properties:
+      rxDetailResponseCode:
+        type: string
+        description: Current status code for rx
+        example: "00"
+      refillable:
+        type: boolean
+        description: Is rx availabel for refill order
+        example: true
+      consumerResponseCode:
+        type: string
+        description: Consumer response code
+        example: "PHE:1000"
+      consumerResponseCodeType:
+        type: string
+        description: Consumer response code type
+        example: "AVAILABLE"
+      statusDescription:
+        type: string
+        description: Status to be displayed on the page to the member
+        example: "Available"
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+        description: Error Code
+        example: 520
+      message:
+        type: string
+        description: Error Message
+        example: "Unknown Error"
+      fields:
+        type: string
+        description: Error fields
+        example: ""
+  AddressResponse:
+    type: array
+    items:
+      properties:
+        executionContext:
+          type: object
+          properties:
+            severity:
+              type: string
+              example: "Info"
+            type:
+              type: string
+              example: "INFO"
+            code:
+              type: string
+              example: "0000"
+            desc:
+              type: string
+              example: "Success"
+            errorList:
+              type: array
+              items:
+                example:
+        executionMessage:
+          type: string
+          example: null
+        success:
+          type: boolean
+          example: true
+  InternalServerError:
+    type: object
+    properties:
+      executionContext:
+        type: object
+        properties:
+          type:
+            type: string
+            example: "ERROR"
+          code:
+            type: string
+            example: "RXC_ERROR"
+          name:
+            type: string
+            example: "INTERNAL_SERVER_ERROR"
+          status:
+            type: number
+            example: 500
+          message:
+            type: string
+            example: "Internal Server Error"
+  ServiceUnavailableError:
+    type: object
+    properties:
+      executionContext:
+        type: object
+        properties:
+          type:
+            type: string
+            example: "ERROR"
+          code:
+            type: string
+            example: "RXC_ERROR"
+          name:
+            type: string
+            example: "SERVICE_UNAVAILABLE"
+          status:
+            type: number
+            example: 503
+          message:
+            type: string
+            example: "Error Happened While accessing services"
+  PreconditionFailed:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          type:
+            type: string
+            example: "ERROR"
+          code:
+            type: string
+            example: "GUID_REQUIRED"
+          status:
+            type: number
+            example: 412
+          message:
+            type: string
+            example: "X-GUID Header is missing"
+  DataSwapError:
+    type: object
+    properties:
+      executionContext:
+        type: object
+        properties:
+          type:
+            type: string
+            example: "ERROR"
+          code:
+            type: string
+            example: "RXC_ERROR"
+          name:
+            type: string
+            example: "DATA_SWAP_ERROR"
+          status:
+            type: number
+            example: 515
+          message:
+            type: string
+            example: "X-GUID: 1234567 is not matching with X-RESPONSE-GUID: 7654321"
+  rxData:
+    type: object
+    properties:
+      rxs:
+        type: array
+        items:
+          properties:
+            type:
+              type: string
+              description: Avail or unAvail
+              example: "Avail"
+            totalCount:
+              type: number
+              description: Total count of the available/unavailable prescriptions
+              example: 1
+            items:
+              type: array
+              items:
+                "$ref": "#/definitions/Prescription"
+            currentPage:
+              type: number
+              description: Current page number of the prescription list
+              example: 1
+            pageSize:
+              type: string
+              description: Page size
+              example: "ALL"
+      executionContext:
+        "$ref": "#/definitions/executionContext"
+      acls:
+        "$ref": "#/definitions/acls"
+  searchRxData:
+    type: object
+    properties:
+      executionContext:
+        "$ref": "#/definitions/executionContext"
+      rxs:
+        type: array
+        items:
+          "$ref": "#/definitions/Prescription"
+  cartData:
+    type: object
+    description: Cart data
+    properties:
+      cartItems:
+        "$ref": "#/definitions/cartItems"
+      userProfile:
+        "$ref": "#/definitions/userProfile"
+      order:
+        "$ref": "#/definitions/userDetails"
+      prescriptions:
+        type: object
+        description: Prescriptions data
+        "$ref": "#/definitions/rxData"
+      searchRxs:
+        type: object
+        description: Search Rx's data
+        properties:
+          prescriptionNumber:
+            "$ref": "#/definitions/Prescription"
+      acls:
+        "$ref": "#/definitions/acls"
+      payProviderMemInfo:
+        "$ref": "#/definitions/payProviderMemInfo"
+      ui_config:
+        "$ref": "#/definitions/ui_config"
+  cartItems:
+    type: object
+    properties:
+      100109642:
+        type: array
+        items:
+          "$ref": "#/definitions/cartItem"
+      613TASNPXTBB:
+        type: array
+        items:
+          "$ref": "#/definitions/cartItem"
+      611BPYUUTEKB:
+        type: array
+        items:
+          "$ref": "#/definitions/cartItem"
+  cartItem:
+    type: object
+    properties:
+      prescriptionNumber:
+        type: string
+        description: Prescription Number to be used for ordering to pharmacy
+        example: "268510057691"
+      usrId:
+        type: string
+        description: GUID of the Member
+        example: "100109642"
+      userIdType:
+        type: string
+        description: User Type (Self / Proxy)
+        example: "self"
+      firstName:
+        type: string
+        description: First Name of the Member
+        example: "Aimiawu"
+      lastName:
+        type: string
+        description: Last Name of the Member
+        example: "Hcotvatau"
+      prescriptionName:
+        type: string
+        description: Name of the drug / prescription.
+        example: "Lovastatin 10 mg tab sand"
+      lastRefillDate:
+        type: string
+        description: Date when rx was last refilled at the pharmacy for the the member
+        example: "07/19/2018"
+        minLength: 3
+        maxLength: 10
+      quantity:
+        type: number
+        description: Quantity of the drugs
+        example: 1
+      nhinId:
+        type: string
+        description: nhinId of pharmacy
+        example: "900002267"
+      amount:
+        type: number
+        format: double
+        description: any co-payment amount
+        example: "20.00"
+      mailable:
+        type: boolean
+        description: if true then then rx is available for shipping
+        example: true
+      refillsRemaining:
+        type: string
+        description: Refills Remaining retuns value if available otherwise returns null.
+        example: "10"
+        minLength: 1
+        maxLength: 3
+      statusCodes:
+        type: string
+        description: Status codes of Prescription
+        example: "00"
+      pharmacyInfo:
+        type: string
+        description: Pharmacy Name
+        example: "0267"
+      pickUpInstruction:
+        type: string
+        description: Any instructions to to the member
+        example: "Take 1 tablet by mouth daily"
+      source:
+        type: string
+        description: Source system of the prescripiton (EPIC / EPIMS)
+        example: "EPIC"
+      isMember:
+        type: boolean
+        description: Member or NMA user
+        example: true
+      consumerResponseCode:
+        type: string
+        description: Consumer Response Code of the Prescription
+        example: "PHE:1000"
+      dispenseLocationCode:
+        type: string
+        description: Dispense Location code of pharmacy
+        example: "47"
+      firstFill:
+        type: string
+        description: >-
+          Returns true if prescriber has prescribed the rx for the first time to member else false
+        example: true
+  ui_config:
+    type: object
+    properties:
+      apiRestUris:
+        type: object
+        properties:
+          fdsLocationsApiUrlPrefix:
+            type: string
+            description: FDS Locations API Url prefix to use
+            example: "/care/v1.0/sitesearch"
+          addressApiUri:
+            type: string
+            description: Address API Url prefix to use
+            example: "/address"
+          mailOrderAddressUri:
+            type: string
+            description: Mail Order Address API Url prefix to use
+            example: "/order/shippingaddress"
+          prescriptionApiUri:
+            type: string
+            description: Prescription API Url prefix to use
+            example: "/prescriptions"
+          bffCartUri:
+            type: string
+            description: Bff Cart API Url prefix to use
+            example: "cart"
+          searchRxApiUri:
+            type: string
+            description: Search Rx API Url prefix to use
+            example: "/prescription"
+          trialClaimsApiUri:
+            type: string
+            description: Trial Claims ApiUri API Url prefix to use
+            example: "/cart/costestimate"
+          placeOrderPickupApiUri:
+            type: string
+            description: Place Order Pickup API Url prefix to use
+            example: "/order/prescriptions/pickup"
+          placeOrderMailApiUri:
+            type: string
+            description: Place Order Mail API Url prefix to use
+            example: "/order/prescriptions/mail"
+          reviewOrderApiUrl:
+            type: string
+            description: reviewOrderApiUrl API Url prefix to use
+            example: "/orderdetails/revieworder"
+          locationsUrl:
+            type: string
+            description: Locations API Url prefix to use
+            example: "/order/pickuplocation"
+          userDetailsApiUri:
+            type: string
+            description: User Details API Url prefix to use
+            example: "/order/details"
+          saveContactDetailsUri:
+            type: string
+            description: Save Contact Details API Url prefix to use
+            example: "/order/contactandnotifications"
+          cancelOrderUri:
+            type: string
+            description: Cancel Order API Url prefix to use
+            example: "/order/cart"
+          csrfToken:
+            type: string
+            description: csrf Token API Url prefix to use
+            example: "/csrftoken"
+      apicBasePath:
+        type: string
+        description: APIC base path
+        example: "mycare/pharmacy-microservices/rx-bff-kpweb/v1"
+      useGlobalProxyPicker:
+        type: boolean
+        description: If true then Globla proxy picker will be used. Otherwise Pharmacy custom proxy picker will be used.
+        example: true
+      dtoAppName:
+        type: string
+        description: App Name
+        example: "rwd"
+      bffInitPath:
+        type: string
+        description: BFF initilization path
+        example: "cart"
+      isPrintUtil:
+        type: boolean
+        description: If true then Print Util will be enabled on Landing page.
+        example: true
+      enableLogs:
+        type: boolean
+        description: If true then logs will be enabled.
+        example: true
+      withCredentials:
+        type: boolean
+        description: If true then logs will be enabled.
+        example: true
+      dtoComponentName:
+        type: string
+        description: Component Name
+        example: "pharmacy-center"
+      runmode:
+        type: string
+        description: Run mode of the application
+        example: "prod"
+      paymentAppUri:
+        type: string
+        description: Payment application URI
+        example: "/payment-profile?callerWorkflow=pharmacy-center-kporg-ui.placeOrder"
+  cartResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        format: int32
+        description: Success code
+        example: 200
+      count:
+        type: number
+        format: int32
+        description: Cart count
+        example: 1
+      data:
+        type: object
+        description: Cart Item Data
+        "$ref": "#/definitions/cartItem"
+  addCartForm:
+    properties:
+      rxNumber:
+        type: number
+        format: int32
+        description: prescription number
+        example: "268510057691"
+        pattern: '[0-9]'
+        minLength: 12
+        maxLength: 12
+      identifier:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Prescription identifier id
+            example: "12"
+          type:
+            type: string
+            description: Prescription identifier type
+            example: ""
+      searchPage:
+        type: boolean
+      cartItems:
+        "$ref": "#/definitions/cartItems"
+    required:
+      - rxNumber
+      - cartItems
+  deleteCartForm:
+    properties:
+      identifier:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Prescription identifier id
+            example: "000022065101"
+          type:
+            type: string
+            description: Prescription identifier type
+            example: "MRN"
+      cartItems:
+        "$ref": "#/definitions/cartItems"
+    required:
+      - cartItems
+  userProfile:
+    type: object
+    properties:
+      user:
+        "$ref": "#/definitions/user"
+      entitlements:
+        "$ref": "#/definitions/entitlements"
+      proxies:
+        "$ref": "#/definitions/proxies"
+  cartItemsObjectForm:
+    properties:
+      cart:
+        type: object
+        properties:
+          cartItems:
+            "$ref": "#/definitions/cartItems"
+  cartItemsEligibility:
+    properties:
+      cartItems:
+        "$ref": "#/definitions/cartItems"
+      postalCode:
+        type: string
+        description: Zip Code
+        example: "94588"
+        pattern: "[0-9]"
+        minLength: 5
+        maxLength: 5
+  user:
+    type: object
+    properties:
+      guid:
+        type: string
+        description: GUID of the member
+        example: "951288322"
+        pattern: "[A-Za-z0-9\\'\\.\\-\\@\\,]"
+        minLength: 5
+        maxLength: 100
+      region:
+        type: string
+        description: Region of the member
+        example: "MRN"
+        pattern: '[A-Za-z]'
+        minLength: 3
+        maxLength: 3
+      fname:
+        type: string
+        description: First Name of the member
+        example: "Adultmaleeqr"
+        pattern: "[A-Za-z0-9\\'\\.\\-]"
+        minLength: 2
+        maxLength: 60
+      lname:
+        type: string
+        description: Last Name of the member
+        example: "Ncqmncggrx"
+        pattern: "[A-Za-z0-9'\\.\\-]"
+        minLength: 2
+        maxLength: 60
+      email:
+        type: string
+        description: EMAIL ID of the member
+        example: "benkponline@yahoo.com"
+        pattern: "[A-Za-z0-9'\\.\\-\\@\\,]"
+        minLength: 5
+        maxLength: 100
+      regionOfRegistration:
+        type: string
+        description: Region of the registration
+        example: "MRN"
+        pattern: '[A-Za-z]'
+        minLength: 3
+        maxLength: 3
+      preferredLanguage:
+        type: string
+        description: Preferred Language of the member (EN / ES)
+        example: "EN"
+        pattern: '[A-Z]'
+        minLength: 2
+        maxLength: 2
+      role:
+        type: string
+        description: Role of the Member (MBR / NMA)
+        example: "MBR"
+        pattern: '[A-Z]'
+        minLength: 3
+        maxLength: 3
+      mailAddress:
+        "$ref": "#/definitions/address"
+  entitlements:
+    type: array
+    items:
+      properties:
+        status:
+          type: string
+          description: Entitlement Status (OK / DENY)
+          example: "OK"
+        decision:
+          type: string
+          description: Decision of the Entitlement (PERMIT / DENY/ NOT APPLICABLE / UNABLE TO DETERMINE)
+          example: "PERMIT"
+        resource:
+          type: string
+          description: Entitlement Name
+          example: "SL-ACAA-Rx-Ctr"
+        shortId:
+          type: number
+          description: Entitlement Number
+          example: 905
+  proxies:
+    type: array
+    items:
+      properties:
+        relId:
+          type: string
+          description: Relationship ID of the proxy
+          example: "883SCMCAZNAB"
+        name:
+          type: string
+          description: Full name of the proxy
+          example: "Teenfemaleeqq Www Ncqmncggrx"
+          pattern: "[A-Za-z0-9'\\.\\-]"
+          minLength: 2
+          maxLength: 120
+        fname:
+          type: string
+          description: First name of the proxy
+          example: "Teenfemaleeqq"
+          pattern: "[A-Za-z0-9'\\.\\-]"
+          minLength: 2
+          maxLength: 60
+        lname:
+          type: string
+          description: Last name of the proxy
+          example: "Www Ncqmncggrx"
+          pattern: "[A-Za-z0-9'\\.\\-]"
+          minLength: 2
+          maxLength: 60
+  pickUpOrderForm:
+    properties:
+      cart:
+        type: object
+        properties:
+          cartItems:
+            "$ref": "#/definitions/cartItems"
+      order:
+        type: object
+        properties:
+          deliveryMethod:
+            type: string
+            description: Delivery Method pickup (or) expresspickup
+            example: "pickup"
+          pharmacyLocation:
+            "$ref": "#/definitions/pickupLocation"
+  mailOrderForm:
+    properties:
+      cart:
+        type: object
+        properties:
+          cartItems:
+            "$ref": "#/definitions/cartItems"
+      order:
+        type: object
+        properties:
+          deliveryMethod:
+            type: string
+            description: Delivery Method for Mail order
+            example: "mail"
+          shippingAddress:
+            "$ref": "#/definitions/address"
+          phones:
+            type: array
+            items:
+              "$ref": "#/definitions/phone"
+          creditCard:
+            "$ref": "#/definitions/creditCard"
+          notificationPreferences:
+            type: array
+            items:
+              "$ref": "#/definitions/notification"
+          contactEmail:
+            type: string
+            description: EMAIL ID of the member
+            example: "test@kp.org"
+            pattern: "[A-Za-z0-9'\\.\\-\\@\\,]"
+            minLength: 5
+            maxLength: 100
+          isPaymentRequired:
+            type: boolean
+            description: Payment required for the order.
+            example: true
+  deliveryOrderForm:
+    properties:
+      cart:
+        type: object
+        properties:
+          cartItems:
+            "$ref": "#/definitions/cartItems"
+      order:
+        type: object
+        properties:
+          deliveryMethod:
+            type: string
+            description: Delivery Method for Mail order
+            example: "mail"
+          shippingAddress:
+            "$ref": "#/definitions/address"
+          phones:
+            type: array
+            items:
+              "$ref": "#/definitions/phone"
+          creditCard:
+            "$ref": "#/definitions/creditCard"
+          notificationPreferences:
+            type: array
+            items:
+              "$ref": "#/definitions/notification"
+          contactEmail:
+            type: string
+            description: EMAIL ID of the member
+            example: "test@kp.org"
+            pattern: "[A-Za-z0-9'\\.\\-\\@\\,]"
+            minLength: 5
+            maxLength: 100
+          isPaymentRequired:
+            type: boolean
+            description: Payment required for the order.
+            example: true
+          deliveryshippingoption:
+            type: integer
+            format: int32
+            description: shipping option
+            example: shipping option
+          requestedDeliveryTime:
+            type: string
+            description: delivery time
+            example: delivery date and time
+          pharmacyId:
+            type: string
+            description: pharmacy Id
+            example: pharmacy Id
+          deliveryFee:
+            type: integer
+            format: int32
+            description: delivery fee
+            example: delivery fee
+          specialInstruction:
+            type: string
+            description: Special Instructions for the order
+            example: "Please handle my prescription cafefully"
+  placeOrderResponse:
+    type: array
+    items:
+      properties:
+        region:
+          type: string
+          description: Region of the member
+          example: "MRN"
+          pattern: '[A-Za-z]'
+          minLength: 3
+          maxLength: 3
+        sourceApplication:
+          type: string
+          description: Source application (KPORG-BFF)
+          example: "KPORG-BFF"
+          pattern: "[A-Z]"
+          minLength: 9
+          maxLength: 9
+        submittedBy:
+          type: object
+          properties:
+            name:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: First Name of the Member who placed the order
+                  example: "Test Pharmacy User"
+                  pattern: "[A-Za-z\\-\\.,\\' ]"
+                middleName:
+                  type: string
+                  description: Middle Name of the Member who placed the order
+                  example: "M"
+                  pattern: "^$|[A-Za-z]"
+                lastName:
+                  type: string
+                  description: Last Name of the Member who placed the order
+                  example: "Test User"
+                  pattern: "[A-Za-z\\-\\.,\\' ]"
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              number:
+                type: string
+                description: Order Number which generated by ePO
+                example: "567"
+                pattern: "[0-9]"
+                minLength: 20
+                maxLength: 30
+              date:
+                type: string
+                description: Order date
+                example: "2020-01-07T18:51:01.236+0000"
+              transactionControlRefNo:
+                type: string
+                description: Transaction Control RefNo is nothing but correlation-id
+                format: uuid
+                example: "2e83b540-3e3a-4345-9cf3-27e6ba508fc8"
+                pattern: "[A-Za-z0-9]"
+                minLength: 2
+                maxLength: 36
+        lineItems:
+          type: array
+          items:
+            properties:
+              member:
+                type: object
+                properties:
+                  name:
+                    type: object
+                    properties:
+                      firstName:
+                        type: string
+                        description: First Name of the Member whoom the order belongs
+                        example: "Goddard"
+                        pattern: "[A-Za-z\\-\\.,\\' ]"
+                      middleName:
+                        type: string
+                        description: Middle Name of the Member whoom the order belongs
+                        example: "M"
+                        pattern: "^$|[A-Za-z]"
+                      lastName:
+                        type: string
+                        description: Last Name of the Member whoom the order belongs
+                        example: "Hcotwittwofounds"
+                        pattern: "[A-Za-z\\-\\.,\\' ]"
+              rxs:
+                type: array
+                items:
+                  properties:
+                    rxNumber:
+                      type: string
+                      description: Prescription Number
+                      example: "268510057691"
+                      pattern: "[0-9]"
+                      minLength: 12
+                      maxLength: 12
+                    mailable:
+                      type: boolean
+                      description: if true then then rx is available for shipping
+                      example: true
+                    status:
+                      type: string
+                      description: Status of the prescription
+                      example: "000"
+                      pattern: "[0-9]"
+                      minLength: 2
+                      maxLength: 3
+                    declinedCode:
+                      type: string
+                      description: DeclinedCode of the prescription (900 / null)
+                      example: "900"
+                      pattern: "[0-9]"
+                      minLength: 0
+                      maxLength: 3
+                    approxRxPickupDate:
+                      type: string
+                      description: Approx Rx pickup date if available (null - Mail Orders)
+                      example: "2020-01-07T18:51:01.236+0000"
+                      minLength: 0
+                      maxLength: 50
+  cardResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        format: int32
+        description: Success code
+        example: 0
+      desc:
+        type: string
+        description: Response description
+        example: null
+  defaultCardResponse:
+    type: object
+    properties:
+      firstName:
+        type: string
+        description: First name of the credit card holder
+        example: "Test User"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 2
+        maxLength: 60
+      middleName:
+        type: string
+        description: Middle name of the credit card holder
+        example: "M"
+        pattern: "^$|[A-Za-z]"
+        minLength: 0
+        maxLength: 1
+      lastName:
+        type: string
+        description: Last name of the credit card holder
+        example: "Credit User"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 2
+        maxLength: 60
+      cardType:
+        type: string
+        description: Credit Card Type (VISA / MASTER / AMEX / DISCOVER)
+        example: "VS"
+        pattern: "[A-Z]"
+        minLength: 1
+        maxLength: 2
+      expiryDate:
+        type: string
+        description: Expiry Date of the Credit Card
+        format: MM/YYYY
+        example: "12/2020"
+        pattern: "[0-9][0-9]/20[0-9]{2}"
+        minLength: 6
+        maxLength: 7
+      last4Digit:
+        type: string
+        description: Last 4 digits of the credit card
+        example: "1234"
+        pattern: "[0-9]"
+        minLength: 4
+        maxLength: 4
+      oneTimeUse:
+        type: boolean
+        description: One time use card or can save payment method for future orders
+        example: true
+      pciToken:
+        type: string
+        description: PCI Token
+        example: "16703457890098765578"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        maxLength: 3000
+      isExpired:
+        type: boolean
+        description: Is the credit card expired
+        example: false
+  cancelOrderResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        format: int32
+        description: Cancel order response status
+        example: 0000
+      desc:
+        type: string
+        description: Response description
+        example: "SUCCESS"
+  phone:
+    type: object
+    properties:
+      areaCode:
+        type: string
+        description: Area Code
+        example: "111"
+        pattern: "[0-9]"
+        minLength: 3
+        maxLength: 3
+      number:
+        type: string
+        description: Number
+        example: "2223333"
+        pattern: "[0-9]"
+        minLength: 7
+        maxLength: 7
+      extension:
+        type: string
+        description: Extension Number
+        example: "100000"
+        pattern: "[0-9]"
+        minLength: 3
+        maxLength: 6
+      type:
+        type: string
+        description: Phone type
+        example: "Mobile"
+        pattern: "[A-Za-z]"
+        minLength: 3
+        maxLength: 15
+  notification:
+    type: object
+    properties:
+      type:
+        type: string
+        description: Notification preference type (EMAIL / SMS)
+        example: "EMAIL"
+        pattern: "[A-Z]"
+        minLength: 3
+        maxLength: 4
+      typeValue:
+        type: string
+        description: EMAIL or SMS value
+        example: "lakshmi.p.ravindran@kp.org"
+        pattern: "[A-Za-z0-9'\\.\\-\\@\\,]"
+        minLength: 5
+        maxLength: 100
+      flag:
+        type: boolean
+        description: Notification flag
+        example: true
+  getAddress:
+    type: array
+    items:
+      properties:
+        address:
+          type: object
+          properties:
+            addressType:
+              type: string
+              description: Address Type
+              example: "SHIPPING"
+            label:
+              type: string
+              description: Address Label
+              example: "ship5640"
+            street1:
+              type: string
+              description: Street1 Address
+              example: "5820 OWENS DR"
+              pattern: "[0-9A-Za-z\\-\\.,\\' /\\#&]"
+              minLength: 2
+              maxLength: 60
+            street2:
+              type: string
+              description: Street2 Address
+              example: "BUILDING E"
+              pattern: "[0-9A-Za-z\\-\\.,\\' /\\#&]"
+              minLength: 2
+              maxLength: 60
+            city:
+              type: string
+              description: City Name
+              example: "PLEASANTON"
+              pattern: "[A-Za-z'\\.\\-\\s\\,]"
+              minLength: 2
+              maxLength: 20
+            state:
+              type: string
+              description: State
+              example: "CA"
+              pattern: "[a-zA-Z ]"
+              minLength: 2
+              maxLength: 2
+            postalCode:
+              type: string
+              description: Zip Code
+              example: "94588"
+              pattern: "[0-9]"
+              minLength: 5
+              maxLength: 5
+            sourceSystem:
+              type: string
+              description: Source System name (KP_EBIZ / EPIC)
+              example: "KP_EBIZ"
+            country:
+              type: string
+              description: Country Name
+              example: "US"
+              pattern: "[A-Z]"
+              minLength: 2
+              maxLength: 2
+            careOfFirstName:
+              type: string
+              description: First Name
+              example: "SUBSCRIBER"
+              pattern: "[A-Za-z\\-\\.,\\' ]"
+              minLength: 1
+              maxLength: 40
+            careOfLastName:
+              type: string
+              description: Last Name
+              example: "HCOTABADHCBGBLN"
+              pattern: "[A-Za-z\\-\\.,\\' ]"
+              minLength: 1
+              maxLength: 50
+            careOfMiddleName:
+              type: string
+              description: Middle Name
+              example: "M"
+              pattern: "^$|[A-Za-z]"
+              minLength: 0
+              maxLength: 1
+            preferredIn:
+              type: boolean
+              description: Default address
+              example: true
+            creationDate:
+              type: string
+              description: Address Creation Date
+              example: "2018-09-06"
+  address:
+    type: object
+    properties:
+      addressType:
+        type: string
+        description: Address Type
+        example: "SHIPPING"
+      label:
+        type: string
+        description: Address Label
+        example: "ship5640"
+      street1:
+        type: string
+        description: Street1 Address
+        example: "5820 OWENS DR"
+        pattern: "[0-9A-Za-z\\-\\.,\\' /\\#&]"
+        minLength: 2
+        maxLength: 60
+      street2:
+        type: string
+        description: Street2 Address
+        example: "BUILDING E"
+        pattern: "[0-9A-Za-z\\-\\.,\\' /\\#&]"
+        minLength: 2
+        maxLength: 60
+      city:
+        type: string
+        description: City Name
+        example: "PLEASANTON"
+        pattern: "[A-Za-z'\\.\\-\\s\\,]"
+        minLength: 2
+        maxLength: 20
+      state:
+        type: string
+        description: State
+        example: "CA"
+        pattern: "[a-zA-Z ]"
+        minLength: 2
+        maxLength: 2
+      postalCode:
+        type: string
+        description: Zip Code
+        example: "94588"
+        pattern: "[0-9]"
+        minLength: 5
+        maxLength: 5
+      sourceSystem:
+        type: string
+        description: Source System name (KP_EBIZ / EPIC)
+        example: "KP_EBIZ"
+      country:
+        type: string
+        description: Country Name
+        example: "US"
+        pattern: "[A-Z]"
+        minLength: 2
+        maxLength: 2
+      careOfFirstName:
+        type: string
+        description: First Name
+        example: "SUBSCRIBER"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 1
+        maxLength: 40
+      careOfLastName:
+        type: string
+        description: Last Name
+        example: "HCOTABADHCBGBLN"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 1
+        maxLength: 50
+      careOfMiddleName:
+        type: string
+        description: Middle Name
+        example: "M"
+        pattern: "^$|[A-Za-z]"
+        minLength: 0
+        maxLength: 1
+      preferredIn:
+        type: boolean
+        description: Default address
+        example: true
+      creationDate:
+        type: string
+        description: Address Creation Date
+        example: "2018-09-06"
+  shipAddress:
+    type: object
+    properties:
+      label:
+        type: string
+        description: Address Label
+        example: "MAILING"
+      street1:
+        type: string
+        description: Street1 Address
+        example: "1010N MINNA ST"
+        pattern: "[0-9A-Za-z\\-\\.,\\' /\\#&]"
+        minLength: 2
+        maxLength: 60
+      city:
+        type: string
+        description: City Name
+        example: "SAN FRANCISCO"
+        pattern: "[A-Za-z'\\.\\-\\s\\,]"
+        minLength: 2
+        maxLength: 20
+      state:
+        type: string
+        description: State
+        example: "CA"
+        pattern: "[a-zA-Z ]"
+        minLength: 2
+        maxLength: 2
+      postalCode:
+        type: string
+        description: Zip Code
+        example: "94103"
+        pattern: "[0-9]"
+        minLength: 5
+        maxLength: 5
+  creditCard:
+    type: object
+    properties:
+      cardType:
+        type: string
+        description: Credit Card Type (VISA / MASTER / AMEX / DISCOVER)
+        example: "VS"
+        pattern: "[A-Z]"
+        minLength: 1
+        maxLength: 2
+      expiryDate:
+        type: string
+        description: Expiry Date of the Credit Card
+        format: MM/YYYY
+        example: "12/2020"
+        pattern: "[0-9][0-9]/20[0-9]{2}"
+        minLength: 6
+        maxLength: 7
+      last4Digit:
+        type: string
+        description: Last 4 digits of the credit card
+        example: "1234"
+        pattern: "[0-9]"
+        minLength: 4
+        maxLength: 4
+      oneTimeUse:
+        type: boolean
+        description: One time use card or can save payment method for future orders
+        example: true
+      pciToken:
+        type: string
+        description: PCI Token
+        example: "16703457890098765578"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        maxLength: 3000
+      firstName:
+        type: string
+        description: First name of the credit card holder
+        example: "Test User"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 2
+        maxLength: 60
+      middleName:
+        type: string
+        description: Middle name of the credit card holder
+        example: "M"
+        pattern: "^$|[A-Za-z]"
+        minLength: 0
+        maxLength: 1
+      lastName:
+        type: string
+        description: Last name of the credit card holder
+        example: "Credit User"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 2
+        maxLength: 60
+      isExpired:
+        type: boolean
+        description: Is the credit card expired
+        example: false
+  creditCardEPIMS:
+    type: object
+    properties:
+      cardType:
+        type: string
+        description: Credit Card Type (VISA / MASTER / AMEX / DISCOVER)
+        example: "VS"
+        pattern: "[A-Z]"
+        minLength: 1
+        maxLength: 2
+      expiryDate:
+        type: string
+        description: Expiry Date of the Credit Card
+        format: MM/YYYY
+        example: "12/2020"
+        pattern: "[0-9][0-9]/20[0-9]{2}"
+        minLength: 6
+        maxLength: 7
+      last4Digit:
+        type: string
+        description: Last 4 digits of the credit card
+        example: "1234"
+        pattern: "[0-9]"
+        minLength: 4
+        maxLength: 4
+      oneTimeUse:
+        type: boolean
+        description: One time use card or can save payment method for future orders
+        example: false
+      firstName:
+        type: string
+        description: First name of the credit card holder
+        example: "Test User"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 2
+        maxLength: 60
+      middleName:
+        type: string
+        description: Middle name of the credit card holder
+        example: "M"
+        pattern: "^$|[A-Za-z]"
+        minLength: 0
+        maxLength: 1
+      lastName:
+        type: string
+        description: Last name of the credit card holder
+        example: "Credit User"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 2
+        maxLength: 60
+      isExpired:
+        type: boolean
+        description: Is the credit card expired
+        example: false
+  executionContext:
+    type: object
+    properties:
+      severity:
+        type: string
+        description: Severity of the response
+        example: "Info"
+      type:
+        type: string
+        description: Type of the response (INFO / WARN / ERROR)
+        example: "INFO"
+      code:
+        type: string
+        description: Execution context code
+        example: "0000"
+      desc:
+        type: string
+        description: Description
+        example: "Success"
+  notificationPreferences:
+    type: array
+    items:
+      properties:
+        featureType:
+          type: string
+          description: Feature Name
+          example: "RX_REFILL_NOTIFICATION"
+        value:
+          type: string
+          description: Notification preference values ("email,text" / "email" / "text")
+          example: "email,text"
+  userDetails:
+    type: object
+    properties:
+      deliveryMethod:
+        type: string
+        description: Delivery Method Name (mail / pickup / expresspickup)
+        example: "mail"
+      creditCard:
+        "$ref": "#/definitions/creditCardEPIMS"
+      notificationPreferences:
+        "$ref": "#/definitions/notificationPreferences"
+      email:
+        type: string
+        description: Email Address of the member
+        example: "test@kp.org"
+      phone:
+        "$ref": "#/definitions/phones"
+      shipToAddress:
+        "$ref": "#/definitions/shipAddress"
+      payProviderMemInfo:
+        "$ref": "#/definitions/payProviderMemInfo"
+  phones:
+    type: array
+    items:
+      properties:
+        areaCode:
+          type: string
+          description: Area Code
+          example: "111"
+          pattern: "[0-9]"
+          minLength: 3
+          maxLength: 3
+        number:
+          type: string
+          description: Number
+          example: "2223333"
+          pattern: "[0-9]"
+          minLength: 7
+          maxLength: 7
+        extension:
+          type: string
+          description: Extension Number
+          example: "1000"
+          pattern: "[0-9]"
+          minLength: 3
+          maxLength: 4
+        type:
+          type: string
+          description: Phone type
+          example: "Mobile"
+          pattern: "[A-Za-z]"
+          minLength: 3
+          maxLength: 15
+  pickupLocation:
+    type: object
+    properties:
+      pharmacyId:
+        type: string
+        description: Pharmacy Location ID
+        example: "47"
+        pattern: "[0-9]"
+        minLength: 1
+        maxLength: 100
+      facilityName:
+        type: string
+        description: Facility Name
+        example: "San Juan Capistrano Pharmacy"
+        pattern: "[A-Za-z0-9]"
+        minLength: 1
+        maxLength: 300
+      phoneNumberDetails:
+        type: string
+        description: Phone Number Details
+        example: "Information/Refills by phone : 866.353.5054(toll free)"
+        pattern: "[A-Za-z0-9'\\.\\-\\s\\,\\()\\>\\<]"
+        minLength: 1
+        maxLength: 300
+      phoneNumberDetailsMobileView:
+        type: string
+        description: Phone Number Details for Mobile View
+        example: "Information by phone : 866.353.5054(toll free)"
+        pattern: "[A-Za-z0-9'\\.\\-\\s\\,\\()\\>\\<]"
+        minLength: 1
+        maxLength: 300
+      facilityHours:
+        type: string
+        description: Pharmacy facility hours
+        example: "Monday through Friday, 9 a.m. to 5:30 p.m."
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 1
+        maxLength: 300
+      facilityAddress:
+        type: object
+        properties:
+          label:
+            type: string
+            description: Pharmacy Label
+            example: "San Juan Capistrano Pharmacy"
+            pattern: "[A-Za-z\\-\\.,\\' ]"
+            minLength: 2
+            maxLength: 100
+          street1:
+            type: string
+            description: Pharmacy Address street1
+            example: "30400 Camino Capistrano"
+            pattern: "[A-Za-z\\-\\.,\\' ]"
+            minLength: 2
+            maxLength: 100
+          city:
+            type: string
+            description: City Name
+            example: "portland"
+            pattern: "[A-Za-z]"
+            minLength: 2
+            maxLength: 60
+          state:
+            type: string
+            description: State
+            example: "OR"
+            pattern: "[A-Z]"
+            minLength: 2
+            maxLength: 2
+          postalCode:
+            type: string
+            description: Zip Code of the pharmacy location
+            example: "92675"
+            pattern: "[0-9]"
+            minLength: 5
+            maxLength: 5
+      srchInputMiles:
+        type: number
+        description: Search Input Miles
+        example: 5
+        pattern: '[0-9]'
+        minLength: 1
+        maxLength: 100
+      srchInputCityOrZip:
+        type: string
+        description: Search Input City or Zip code
+        example: "Portland"
+        pattern: '[A-Za-z]'
+        minLength: 1
+        maxLength: 300
+      locationSerialNumber:
+        type: string
+        description: Location Serial Number
+        example: "1"
+        pattern: '[0-9]'
+        minLength: 1
+        maxLength: 100
+  pickupLocationResult:
+    type: object
+    properties:
+      success:
+        type: number
+        description: Request Status
+        example: 200
+        pattern: "[0-9]"
+        minLength: 3
+        maxLength: 3
+      Desc:
+        type: string
+        description: Request Description
+        example: "PickUp Location has been saved"
+        pattern: "[A-Za-z]"
+        minLength: 1
+        maxLength: 300
+  shippingAddressResult:
+    type: object
+    properties:
+      success:
+        type: number
+        description: Request Status
+        example: 200
+        pattern: "[0-9]"
+        minLength: 3
+        maxLength: 3
+      desc:
+        type: string
+        description: Request Description
+        example: "Shipping Address has been saved"
+        pattern: "[A-Za-z]"
+        minLength: 1
+        maxLength: 300
+  contactAndNotifications:
+    type: object
+    properties:
+      deliveryMethod:
+        type: string
+        description: Delivery Method
+        example: "mail"
+      phones:
+        "$ref": "#/definitions/phones"
+      notificationPreferences:
+        "$ref": "#/definitions/notificationPreferences"
+  estimateCartData:
+    type: object
+    properties:
+      cartItems:
+        "$ref": "#/definitions/cartItems"
+      paymentRequired:
+        type: boolean
+        description: This value is determined based on cost estimates amount or co-pay amount whether payment is required or not
+        example: true
+  acls:
+    type: object
+    properties:
+      VIEW_RX:
+        "$ref": "#/definitions/accessCode"
+      ORDER_RX:
+        "$ref": "#/definitions/accessCode"
+  accessCode:
+    type: object
+    properties:
+      code:
+        type: string
+        example: "00000"
+      hasAccess:
+        type: boolean
+        example: true
+  getRxNotificationPreferencesResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        description: Status of both /prefereces and /profile calls
+        example: "SUCCESS"
+        pattern: "[A-Za-z]"
+        minLength: 1
+        maxLength: 10
+      executionContext:
+        type: string
+        description: Execution Context
+        example: null
+      eppCommunicationPreferences:
+        "$ref": "#/definitions/eppCommunicationPreferences"
+      communicationChannels:
+        "$ref": "#/definitions/communicationChannels"
+      contactMethods:
+        "$ref": "#/definitions/contactMethods"
+  eppCommunicationPreferences:
+    type: object
+    properties:
+      category:
+        type: string
+        description: Preference Category
+        example: "Pharmacy"
+        pattern: "[A-Za-z0-9]"
+        minLength: 1
+        maxLength: 50
+      categoryOrder:
+        type: number
+        description: Preference Category Order
+        example: 4
+        pattern: '[0-9]'
+        minLength: 1
+        maxLength: 2
+      categoryId:
+        type: string
+        description: Preference Category ID
+        example: "RXC"
+        pattern: "[A-Za-z0-9]"
+        minLength: 1
+        maxLength: 5
+      preferences:
+        type: array
+        items:
+          type: object
+          properties:
+            communicationCode:
+              type: string
+              description: Communication Code
+              example: "RXOFP"
+              pattern: "[A-Za-z0-9]"
+              minLength: 1
+              maxLength: 10
+            displayName:
+              type: string
+              description: Preference Display Name
+              example: "Order Fulfillment preference"
+              pattern: "[A-Za-z0-9]"
+              minLength: 1
+              maxLength: 100
+            description:
+              type: string
+              description: Description
+              example: "This is Order Fulfillment preference type"
+              pattern: "[A-Za-z0-9]"
+              minLength: 1
+              maxLength: 100
+  communicationChannels:
+    type: array
+    items:
+      type: object
+      properties:
+        groupGuid:
+          type: string
+          description: Group Guid
+          example: "ace361a4-397c-4ea8-a784-773f019b91ab"
+          pattern: "[A-Za-z\\-\\.,\\' ]"
+          minLength: 1
+          maxLength: 50
+        communicationCode:
+          type: string
+          description: Communication Code
+          example: "RXOFP"
+          pattern: "[A-Za-z0-9]"
+          minLength: 1
+          maxLength: 10
+        communicationChannel:
+          type: string
+          description: Communication Channel Email (OR) SMS
+          example: "Email"
+          pattern: "[A-Za-z]"
+          minLength: 1
+          maxLength: 10
+        unsubscribe:
+          type: boolean
+          example: true
+          description: Unsubscribe communication Channel
+  contactMethods:
+    type: array
+    items:
+      type: object
+      properties:
+        groupGuid:
+          type: string
+          description: Group Guid
+          example: "ace361a4-397c-4ea8-a784-773f019b91ab"
+          pattern: "[A-Za-z\\-\\.,\\' ]"
+          minLength: 1
+          maxLength: 50
+        values:
+          type: object
+          properties:
+            communicationChannel:
+              type: string
+              description: Contact Method Type Email (OR) SMS
+              example: "Email"
+              pattern: "[A-Za-z]"
+              minLength: 1
+              maxLength: 10
+            emailAddres:
+              type: string
+              description: EMAIL ID of the member
+              example: "testepp@kp.org"
+              pattern: "[A-Za-z0-9'\\.\\-\\@\\,]"
+              minLength: 5
+              maxLength: 100
+            emailType:
+              type: string
+              description: Email Type Personal (OR) Business
+              example: "Personal"
+              pattern: "[A-Za-z]"
+              minLength: 1
+              maxLength: 10
+            emailPreferredFlag:
+              type: string
+              description: Email Preferred Flag True or False
+              example: "True"
+              pattern: "[A-Za-z]"
+              minLength: 1
+              maxLength: 10
+  setRxNotificationPreferencesResponse:
+    type: object
+    properties:
+      executionContext:
+        type: string
+        description: Execution Context
+        example: null
+      correlationId:
+        type: string
+        description: CorrelationID of the response
+        example: "c9cc25bf-479a-4512-a998-c5806e3255ac"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 1
+        maxLength: 50
+      responseCode:
+        type: string
+        description: Response Status
+        example: "Success"
+        pattern: "[A-Za-z]"
+        minLength: 1
+        maxLength: 10
+      responseMessage:
+        type: string
+        description: Response Status message
+        example: "Success Record Created or Updated"
+        pattern: "[A-Za-z]"
+        minLength: 1
+        maxLength: 100
+  payProviderMemInfo:
+    type: object
+    properties:
+      dateOfBirth:
+        type: string
+        description: Date of Birth of member
+        example: "1956-01-01T00:00:00.000+0000"
+      eligibility:
+        type: boolean
+        description: If true then Pay to provider member
+        example: true
+      eligibilityTypeCode:
+        type: string
+        description: Eligibility Type Code
+        example: "RX-PTP"
+      eligibleBalance:
+        type: string
+        description: Eligibility Balance
+        example: "100.00"
+      wexOperationSucceeded:
+        type: string
+        description: WEX Operation Succeeded
+        example: "true"
+  getRefillReminderPreferencesResponse:
+    type: object
+    properties:
+      authorizedToView:
+        type: boolean
+        description: Check Teen 213 entitlement & Adult_Teen proxy relationship
+        example: true
+      eppPreferences:
+        type: object
+        properties:
+          status:
+            type: string
+            description: Status of both /prefereces and /profile calls
+            example: "SUCCESS"
+            pattern: "[A-Za-z]"
+            minLength: 1
+            maxLength: 10
+          executionContext:
+            type: string
+            description: Execution Context
+            example: null
+          eppCommunicationPreferences:
+            "$ref": "#/definitions/eppCommunicationPreferences"
+          communicationChannels:
+            "$ref": "#/definitions/communicationChannels"
+          contactMethods:
+            "$ref": "#/definitions/contactMethods"
+      prescriptions:
+        "$ref": "#/definitions/rxData"
+  setRefillReminderPreferencesResponse:
+    type: object
+    properties:
+      statusCode:
+        type: string
+        description: Status code of backend Refill Reminder service
+        example: "010"
+        pattern: "[0-9]"
+        minLength: 1
+        maxLength: 10
+      statusDescription:
+        type: string
+        description: Status description of backend Refill Reminder service
+        example: "Success"
+        pattern: "[A-Za-z]"
+        minLength: 1
+        maxLength: 10
+      txid:
+        type: string
+        description: Transaction Id/ CorrelationID
+        example: "ace361a4-397c-4ea8-a784-773f019b91ab"
+        pattern: "[A-Za-z\\-\\.,\\' ]"
+        minLength: 1
+        maxLength: 36
+  setRefillReminderPreferencesBody:
+    type: object
+    properties:
+      rxRmdrEnrollList:
+        type: array
+        items:
+          type: object
+          properties:
+            kprx:
+              type: string
+              description: Rx Number
+              example: "229110138976"
+              pattern: "[0-9]"
+              minLength: 12
+              maxLength: 12
+      rxRmdrUnenrollList:
+        type: array
+        items:
+          type: object
+          properties:
+            kprx:
+              type: string
+              description: Rx Number
+              example: "229110138976"
+              pattern: "[0-9]"
+              minLength: 12
+              maxLength: 12

@@ -1,0 +1,221 @@
+{
+    "proxyConfig": {
+      "apiTitle": "pharmacy-center-kpweb-bff-apiv1",
+      "rest": true,
+      "proxyType": "external",
+      "basePath": "/mycare/{env}/pharmacy-microservices/pharmacy-center-kpweb-bff/v1",
+      "manager": {
+        "name": "I201591",
+        "email": "ganesh.x.rajendran@kp.org"
+      },
+      "policies":{
+        "slogServiceName": {
+            "gal_original_destination": "CSG-KPORG-RX-MS_pharmacy-center-kpweb-bff_DP_KPCanonicalXML"
+          },
+         "pciToken": true,
+         "validateXGUID": true,
+         "apiKey": true
+      },
+      "x-EndpointExtension": [
+        {
+          "Endpoint": {
+            "name": "DIT",
+            "url": "https://dit-rx-bff-kpweb-1.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "Development"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "DIT",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "DIT2",
+            "url": "https://dit-rx-bff-kpweb-2.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "Development"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "DIT2",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "DIT3",
+            "url": "https://dit-rx-bff-kpweb-3.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "Development"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "DIT3",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "QA",
+            "url": "https://qa-rx-bff-kpweb-1.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "QA"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "QA",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "QA2",
+            "url": "https://qa-rx-bff-kpweb-2.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "QA"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "QA2",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "QA3",
+            "url": "https://qa-rx-bff-kpweb-3.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "QA"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "QA3",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "UAT",
+            "url": "https://uat-rx-bff-kpweb-1.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "QA"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "UAT",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "UAT2",
+            "url": "https://uat-rx-bff-kpweb-2.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "QA"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "UAT2",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "PERF",
+            "url": "https://perf-rx-bff-kpweb-1.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "Performance"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "PERF",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "PREPROD",
+            "url": "https://preprod-rx-bff-kpweb-1.rx.ext-svc-bmxnp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "User Acceptance"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "PREPROD",
+            "urn": ""
+          }
+        },
+        {
+          "Endpoint": {
+            "name": "PROD",
+            "url": "https://prod-rx-bff-kpweb-1.rx.ext-svc-bmxp.appl.kp.org",
+            "environments": [
+              {
+                "environment": "Production"
+              }
+            ],
+            "regions": [
+              {
+                "region": "NATL"
+              }
+            ],
+            "envlbl": "prod",
+            "urn": ""
+          }
+        }
+      ]
+    }
+
+}
