@@ -1,4 +1,5 @@
-@Library('Pipeline-shared-library@master')
+@Library('Pipeline-shared-library@master')_
+import src.lib.*;
 pipeline {
     agent none
     environment {
