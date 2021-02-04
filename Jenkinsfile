@@ -15,8 +15,8 @@ pipeline {
       stage('Initialization') {
         agent {label ''unixNode''}
         steps {
-           validator();
-	  sh(returnStdout: true, script: "node schemaValidtor.js");
+          // validator();
+	  //sh(returnStdout: true, script: "node schemaValidtor.js");
            
          }
       }
