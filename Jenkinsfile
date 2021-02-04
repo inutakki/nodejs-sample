@@ -1,5 +1,4 @@
-@Library('Pipeline-shared-library@master') _
-
+@Library('Pipeline-shared-library') _
 pipeline {
    // agent none
     environment {
@@ -15,7 +14,7 @@ pipeline {
       stage('Initialization') {
         agent {label 'unixNode'}
         steps {
-          // validator();
+           validator();
 	  //sh(returnStdout: true, script: "node schemaValidtor.js");
            
          }
