@@ -1,7 +1,7 @@
-@Library('Pipeline-shared-library') _
+@Library('Pipeline-shared-library@master') _
 
 pipeline {
-    agent none
+   // agent none
     environment {
         // Setting this to maven.  setEnv will not work without a build type
         // Using gitHubHost - no function in utils for the Git Hub Host
@@ -13,7 +13,7 @@ pipeline {
     }
     stages {
       stage('Initialization') {
-        agent {label ''unixNode''}
+        agent {label 'unixNode'}
         steps {
           // validator();
 	  //sh(returnStdout: true, script: "node schemaValidtor.js");
