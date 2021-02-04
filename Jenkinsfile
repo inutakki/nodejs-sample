@@ -11,7 +11,7 @@ pipeline {
     }
     stages {
       stage('Initialization') {
-        agent {label 'maven'}
+        agent {label ''unixNode''}
         steps {
            validator();
 	  sh(returnStdout: true, script: "node schemaValidtor.js");
