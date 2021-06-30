@@ -22,7 +22,7 @@ agent none
          }
 	      
       }
-      stage("\\u1F9F9 coverage"){
+      stage(":selfie: coverage"){
         agent { label 'unixNode'}
 	  steps {
 	    echo "Inside Coverage"
