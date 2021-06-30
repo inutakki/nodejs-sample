@@ -12,7 +12,7 @@ agent none
     }
 
     stages {
-      stage('Initialization') {
+      stage(' 🧪 Initialization 🐳') {
         agent {label 'unixNode'}
         steps {
            //validator();
@@ -22,7 +22,7 @@ agent none
          }
 	      
       }
-      stage("(🔬) coverage"){
+      stage("🔬 coverage"){
         agent { label 'unixNode'}
 	  steps {
 	    echo "Inside Coverage"
