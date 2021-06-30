@@ -15,13 +15,14 @@ agent none
       stage('Initialization') {
         agent {label 'unixNode'}
         steps {
-           validator();
+           //validator();
+	  echo "test"
 	  //sh(returnStdout: true, script: "node schemaValidtor.js");
            
          }
 	      
       }
-      stage(':broom: coverage'){
+      stage('U+1F9F9 coverage'){
         agent { label 'unixNode'}
 	  steps {
 	    echo "Inside Coverage"
