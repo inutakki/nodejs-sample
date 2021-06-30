@@ -19,6 +19,13 @@ agent none
 	  //sh(returnStdout: true, script: "node schemaValidtor.js");
            
          }
+	      
       }
+      stage(:broom: 'coverage'){
+        agent { label 'unixNode'}
+	  steps {
+	    echo "Inside Coverage"
+	  }
+     }
   }
 }
