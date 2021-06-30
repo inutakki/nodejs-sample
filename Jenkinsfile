@@ -21,7 +21,7 @@ agent none
          }
 	      
       }
-      stage(:broom: 'coverage'){
+      stage(':broom: coverage'){
         agent { label 'unixNode'}
 	  steps {
 	    echo "Inside Coverage"
